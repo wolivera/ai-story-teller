@@ -1,5 +1,5 @@
 transformers
 torch
 Image
-accelerate
+python-dotenv
 

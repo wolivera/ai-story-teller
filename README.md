@@ -26,6 +26,8 @@ To install the dependencies for AI Story Teller, follow these steps:
     pip install -r requirements.txt
     ```
 
+5. Create a `.env` file from the `.env.example` and set the values
+
 ## Demo
 
 Here's a GIF demonstrating the AI Story Teller in action:
