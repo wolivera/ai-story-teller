@@ -1,62 +1,60 @@
-# import os
-# from transformers import pipeline
-# from dotenv import load_dotenv, find_dotenv
+import os
+import requests
+import scipy
+from dotenv import load_dotenv
+from PIL import Image
+from transformers import BlipProcessor, BlipForConditionalGeneration, AutoProcessor, AutoModel
+from langchain_openai import ChatOpenAI
 
-# # load dotenv and get huggface token
-# load_dotenv(find_dotenv())
-# huggface_token = os.getenv("HUGGINGFACE_TOKEN")
+# load env vars
 
-# print("Huggingface token: ", huggface_token)
+load_dotenv(".env")
 
-# pipe = pipeline("image-text-to-text", model="Tensoic/Cerule-backup", trust_remote_code=True, token= huggface_token)
-# pipe("Who are these charecters?", images="images/detectives.jpeg")
+# 1 Get the description for the image
 
-# Use a pipeline as a high-level helper
-# import os
-# from transformers import pipeline
-# from dotenv import load_dotenv, find_dotenv
-# from PIL import Image
-# import requests
+processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
+model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large")
 
-# load_dotenv(find_dotenv())
-# huggface_token = os.getenv("HUGGINGFACE_TOKEN")
+img_url = 'https://storage.googleapis.com/sfr-vision-language-research/BLIP/demo.jpg' 
+raw_image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
 
-# pipe = pipeline("image-to-text", model="llava-hf/llava-v1.6-mistral-7b-hf", token=huggface_token, trust_remote_code=True)
+# conditional image captioning
+text = "describe this image with many details"
+inputs = processor(raw_image, text, return_tensors="pt")
 
-# url = "https://huggingface.co/datasets/Narsil/image_dummy/resolve/main/parrots.png"
-# image = Image.open(requests.get(url, stream=True).raw)
+out = model.generate(**inputs, max_length=100)
+print(processor.decode(out[0], skip_special_tokens=True))
 
-# pipe(images=url)
+# unconditional image captioning
+inputs = processor(raw_image, return_tensors="pt")
 
+out = model.generate(**inputs)
+image_description = processor.decode(out[0], skip_special_tokens=True)
 
-# from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
-# import torch
-# from PIL import Image
-# import requests
+print("Image description: ", image_description)
 
-# processor = LlavaNextProcessor.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf")
+# 2 Create a story using the description. We'll use Langchain for this task as it offers long text generation capabilities
 
-# model = LlavaNextForConditionalGeneration.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf", torch_dtype=torch.float16, low_cpu_mem_usage=True)
+llm = ChatOpenAI(api_key=os.getenv("OPENAI_API_KEY"), model="gpt-3.5-turbo", max_tokens=1000)
 
-# # prepare image and text prompt, using the appropriate prompt template
-# url = "https://github.com/haotian-liu/LLaVA/blob/1a91fc274d7c35a9b50b3cb29c4247ae5837ce39/images/llava_v1_5_radar.jpg?raw=true"
-# image = Image.open(requests.get(url, stream=True).raw)
-# prompt = "[INST] <image>\nWhat is shown in this image? [/INST]"
+output = llm.invoke("Tell a story about a " + image_description)
+story = output.content
 
-# inputs = processor(prompt, image, return_tensors="pt")
+print("Story: ", story)
 
-# # autoregressively complete prompt
-# output = model.generate(**inputs, max_new_tokens=100)
+# 3 Generate an audio file for the story
+processor = AutoProcessor.from_pretrained("suno/bark")
+model = AutoModel.from_pretrained("suno/bark")
 
-# print(processor.decode(output[0], skip_special_tokens=True))
+inputs = processor(
+    text=[story],
+    return_tensors="pt",
+)
+speech_values = model.generate(**inputs, do_sample=True)
 
-# Load model directly
-# Use a pipeline as a high-level helper
-from transformers import pipeline
+scipy.io.wavfile.write("story_out.wav", rate=22050, data=speech_values.cpu().numpy().squeeze())
 
-image_to_text = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
+print("Audio file generated!")
 
-url = "https://huggingface.co/datasets/Narsil/image_dummy/resolve/main/parrots.png"
-output = image_to_text(url)
+# 4 Play the audio file
 
-print(output)

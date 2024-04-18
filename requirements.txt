@@ -2,4 +2,5 @@ transformers
 torch
 Image
 python-dotenv
-
+langchain-openai
+scipy
