@@ -4,3 +4,4 @@ Image
 python-dotenv
 langchain-openai
 playsound
+streamlit
