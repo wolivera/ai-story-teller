@@ -1,6 +1,6 @@
 # AI Story Teller
 
-AI Story Teller is a project that utilizes Hugging Face and AI models to create a story telling application. The goal of this project is to incrementally add features to build an application that can read images, generate text, and produce audio for a story.
+AI Story Teller is a project that utilizes Hugging Face, Langchain and AI models to create a story telling application. The goal of this project is to incrementally add features to build an application that can read images, generate text, and produce audio for a story.
 
 ## Installation
 
@@ -30,8 +30,8 @@ To install the dependencies for AI Story Teller, follow these steps:
 
 ## Demo
 
-![AI Story Teller Demo](record-pt-1.gif)
-![AI Story Teller Demo](record-pt-2.gif)
+![AI Story Teller Demo](doc/record-pt-1.gif)
+![AI Story Teller Demo](doc/record-pt-2.gif)
 
 
 ## Usage
