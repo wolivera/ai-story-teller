@@ -39,11 +39,11 @@ def main():
                 with st.expander("Image Description"):
                     st.write(image_description)
 
-                with st.expander("Here's your personalized story:"):
+                with st.expander("Here's your personalized story"):
                     st.write(story)
 
-            # story_out = get_audio_file_inference(story)
-            # play_audio_file(story_out)
+                audio_out = get_audio_file_inference(story)
+                st.audio(audio_out, format="audio/flac", start_time=0)
 
 def get_image_description(raw_image):
     processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")

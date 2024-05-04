@@ -30,21 +30,17 @@ To install the dependencies for AI Story Teller, follow these steps:
 
 ## Demo
 
-Here's a GIF demonstrating the AI Story Teller in action:
+![AI Story Teller Demo](record-pt-1.gif)
+![AI Story Teller Demo](record-pt-2.gif)
 
-![AI Story Teller Demo](demo.gif)
 
 ## Usage
 
-To use the AI Story Teller, follow these steps:
+The app uses Streamlit to create a web-based interface for the AI Story Teller. To run the application run:
 
-1. Run the main script:
-
-    ```shell
-    python main.py
-    ```
-
-2. Follow the on-screen instructions to provide input images and interact with the story telling application.
+```shell
+streamlite run app.py
+```
 
 ## Contributing
 
